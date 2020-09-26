@@ -30,8 +30,8 @@ public class Player : MonoBehaviour
     {
         agent = GetComponent<NavMeshAgent>();
 
-        secondsRequiredForEgg = Random.Range(20, 60);
-        secondsRequiredForTransformation = Random.Range(30, 60);
+        secondsRequiredForEgg = Random.Range(5, 10);
+        secondsRequiredForTransformation = Random.Range(50, 10);
 
         targetPos = transform.position;
         isReadyForNewTarget = true;
@@ -68,7 +68,7 @@ public class Player : MonoBehaviour
             {
                 Instantiate(egg, transform.position, egg.transform.rotation);
                 eggTimer = 0f;
-                secondsRequiredForEgg = Random.Range(20, 60);
+                secondsRequiredForEgg = Random.Range(50, 10);
             }
         }
     }

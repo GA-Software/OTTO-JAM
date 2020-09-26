@@ -126,3 +126,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   circlePointer: {fileID: 2571488353295873944, guid: c513662c9e6724b42b1c258498132e45,
     type: 3}
+  chickPrefab: {fileID: 6933387518324659303, guid: 3b8c25203979d1542bb9f46145593f7c,
+    type: 3}
+  chickensParent: {fileID: 0}

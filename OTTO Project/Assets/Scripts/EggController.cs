@@ -6,9 +6,11 @@ public class EggController : MonoBehaviour
 {
     private Vector3 mOffset;
     
-    private float mZCoord;
-    public GameObject circlePointer;
+    private float mZCoord, transformationTimer;
+    private int secondsRequiredForTransformation;
+    public GameObject circlePointer, chickPrefab;
 
+    private Transform chickensParent;
     private GameObject thisPointer;
     private Rigidbody _rigidbody;
     private bool isDraggable = true;
@@ -16,6 +18,15 @@ public class EggController : MonoBehaviour
     private void Awake()
     {
         _rigidbody = GetComponent<Rigidbody>();
+        chickensParent = GameObject.FindGameObjectWithTag("ChickensParent").transform;
+    }
+
+    private void Update()
+    {
+        if (!isDraggable)
+        {
+            waitForTransformation();
+        }
     }
 
     void OnMouseDown()
@@ -68,6 +79,20 @@ public class EggController : MonoBehaviour
             Destroy(GetComponent<Rigidbody>());
             Destroy(GetComponent<CapsuleCollider>());
             GameManager.Instance.CollectEgg();
+            secondsRequiredForTransformation = Random.Range(5, 10);
+        }
+    }
+    
+    public void waitForTransformation()
+    {
+        if (GameManager.Instance.isGameStarted && !GameManager.Instance.isGameOver)
+        {
+            transformationTimer += Time.deltaTime;
+            if (transformationTimer >= secondsRequiredForTransformation)
+            {
+                Instantiate(chickPrefab, transform.position, chickPrefab.transform.rotation, chickensParent);
+                Destroy(gameObject);
+            }
         }
     }
 }
