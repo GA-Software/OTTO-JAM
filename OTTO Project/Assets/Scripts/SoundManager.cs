@@ -6,7 +6,7 @@ public class SoundManager : MonoBehaviour
 
     public AudioClip gameStartedClip;
     public AudioClip gameOverClip;
-    public AudioClip placingClip;
+    public AudioClip shipKidnapClip;
     public AudioClip menuMusic;
     public AudioClip buttonClip;
 

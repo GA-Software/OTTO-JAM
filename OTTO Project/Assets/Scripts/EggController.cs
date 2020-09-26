@@ -6,7 +6,7 @@ public class EggController : MonoBehaviour
 {
     private Vector3 mOffset;
     
-    private float mZCoord, transformationTimer;
+    private float mZCoord, transformationTimer, destroyTimer;
     private int secondsRequiredForTransformation;
     public GameObject circlePointer, chickPrefab;
 
@@ -23,7 +23,11 @@ public class EggController : MonoBehaviour
 
     private void Update()
     {
-        if (!isDraggable)
+        if (isDraggable)
+        {
+            waitForDestroy();
+        }
+        else
         {
             waitForTransformation();
         }
@@ -34,7 +38,7 @@ public class EggController : MonoBehaviour
         if (isDraggable)
         {
             _rigidbody.constraints = RigidbodyConstraints.FreezePositionY;
-            thisPointer = Instantiate(circlePointer, new Vector3(transform.position.x, -6.5f, transform.position.z), circlePointer.transform.rotation, transform);
+            thisPointer = Instantiate(circlePointer, new Vector3(transform.position.x, transform.position.y - 3.8f, transform.position.z), circlePointer.transform.rotation, transform);
             mZCoord = Camera.main.WorldToScreenPoint(gameObject.transform.position).z;
 
             // Store offset = gameobject world pos - mouse world pos
@@ -58,7 +62,7 @@ public class EggController : MonoBehaviour
     {
         if (isDraggable)
         {
-            transform.position = new Vector3(GetMouseAsWorldPoint().x + mOffset.x, 3f, GetMouseAsWorldPoint().z + mOffset.z);
+            transform.position = new Vector3(GetMouseAsWorldPoint().x + mOffset.x, 2f, GetMouseAsWorldPoint().z + mOffset.z);
         }
     }
 
@@ -66,12 +70,12 @@ public class EggController : MonoBehaviour
     {
         if(isDraggable)
         {
-            _rigidbody.constraints = RigidbodyConstraints.None;
+            _rigidbody.constraints = RigidbodyConstraints.FreezeRotation;
             Destroy(thisPointer);
         }
     }
 
-    private void OnCollisionEnter(Collision collision)
+    private void OnTriggerEnter(Collider collision)
     {
         if (collision.gameObject.tag == "Basket")
         {
@@ -90,7 +94,23 @@ public class EggController : MonoBehaviour
             transformationTimer += Time.deltaTime;
             if (transformationTimer >= secondsRequiredForTransformation)
             {
-                Instantiate(chickPrefab, transform.position, chickPrefab.transform.rotation, chickensParent);
+                GameManager.Instance.ControlChickenCount();
+                GameObject GO = Instantiate(chickPrefab, transform.position, chickPrefab.transform.rotation, chickensParent);
+                GameManager.Instance.chickens.Add(GO.GetComponent<Player>());
+                StartCoroutine(GameManager.Instance.playParticle(GO.transform.position));
+
+                Destroy(gameObject);
+            }
+        }
+    }
+
+    public void waitForDestroy()
+    {
+        if (GameManager.Instance.isGameStarted && !GameManager.Instance.isGameOver)
+        {
+            destroyTimer += Time.deltaTime;
+            if (destroyTimer >= 30f)
+            {
                 Destroy(gameObject);
             }
         }

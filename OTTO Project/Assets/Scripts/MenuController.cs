@@ -46,7 +46,10 @@ public class MenuController : MonoBehaviour
     }
     
     IEnumerator openMenu()
-    { 
+    {
+        gameplayPanel.SetActive(false);
+        menuPanel.SetActive(true);
+
         gameOverPanel.SetActive(false);
         gameOverPanel.transform.GetChild(0).localScale = Vector3.zero;
 

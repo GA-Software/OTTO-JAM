@@ -12,13 +12,14 @@ public class Player : MonoBehaviour
     private NavMeshAgent agent;
     private Animator animator;
 
-    public GameObject egg, chickenPrefab, ParticleEffect;
+    public GameObject egg, chickenPrefab;
     private float eggTimer, transformationTimer;
     private int secondsRequiredForEgg, secondsRequiredForTransformation;
     public State state;
 
     [SerializeField] private Vector3 targetPos;
     [SerializeField] private bool isReadyForNewTarget = false, waitingForNewTarget = false;
+    public bool isSafe = false;
     
     private void Awake()
     {
@@ -35,7 +36,6 @@ public class Player : MonoBehaviour
 
         targetPos = transform.position;
         isReadyForNewTarget = true;
-        ParticleEffect.SetActive(false);
     }
 
     // Update is called once per frame
@@ -81,8 +81,12 @@ public class Player : MonoBehaviour
             transformationTimer += Time.deltaTime;
             if (transformationTimer >= secondsRequiredForTransformation)
             {
-                ParticleEffect.SetActive(true);
-                Instantiate(chickenPrefab, transform.position, chickenPrefab.transform.rotation, transform.parent);
+                GameManager.Instance.ControlChickenCount();
+                GameObject GO = Instantiate(chickenPrefab, transform.position, chickenPrefab.transform.rotation, transform.parent);
+                GameManager.Instance.chickens.Remove(this);
+                GameManager.Instance.chickens.Add(GO.GetComponent<Player>());
+                StartCoroutine(GameManager.Instance.playParticle(GO.transform.position));
+
                 Destroy(gameObject);
             }
         }
@@ -114,8 +118,7 @@ public class Player : MonoBehaviour
             default:
                 break;
         }
-
-
+        
         if (isReadyForNewTarget)
         {
             animator.SetBool("Walk", true);
@@ -126,5 +129,27 @@ public class Player : MonoBehaviour
             isReadyForNewTarget = false;
             waitingForNewTarget = false;
         }
+    }
+
+    private void OnTriggerEnter(Collider other)
+    {
+        if (other.gameObject.tag == "Lamp")
+        {
+            isSafe = true;
+        }
+    }
+
+    private void OnTriggerExit(Collider other)
+    {
+        if (other.gameObject.tag == "Lamp")
+        {
+            StartCoroutine(waitForSafe());
+        }
+    }
+    
+    IEnumerator waitForSafe()
+    {
+        yield return new WaitForSeconds(3f);
+        isSafe = false;
     }
 }

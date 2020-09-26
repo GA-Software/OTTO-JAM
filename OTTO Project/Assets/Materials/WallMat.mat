@@ -9,7 +9,7 @@ Material:
   m_PrefabAsset: {fileID: 0}
   m_Name: WallMat
   m_Shader: {fileID: 4800000, guid: 6ee274c501732384d9c8bb02a4576937, type: 3}
-  m_ShaderKeywords: _MK_LIGHTMODEL_LAMBERT _MK_LIGHTTYPE_CEL_SHADE_SIMPLE _USEOUTLINE_ON
+  m_ShaderKeywords: _MK_LIGHTMODEL_LAMBERT _MK_LIGHTTYPE_CEL_SHADE_MULTI _USEOUTLINE_ON
   m_LightmapFlags: 4
   m_EnableInstancingVariants: 0
   m_DoubleSidedGI: 0
@@ -108,20 +108,20 @@ Material:
     - _GlossMapScale: 1
     - _Glossiness: 0.5
     - _GlossyReflections: 1
-    - _LightCuts: 3
+    - _LightCuts: 6
     - _LightModel: 1
-    - _LightSmoothness: 0
+    - _LightSmoothness: 0.459
     - _LightThreshold: 0.3
-    - _LightType: 1
+    - _LightType: 2
     - _MKEditorShowDetailBehavior: 0
     - _MKEditorShowDissolveBehavior: 0
-    - _MKEditorShowLightBehavior: 0
+    - _MKEditorShowLightBehavior: 1
     - _MKEditorShowMainBehavior: 1
     - _MKEditorShowOutlineBehavior: 1
     - _MKEditorShowReflectionBehavior: 0
     - _MKEditorShowRenderBehavior: 0
     - _MKEditorShowRimBehavior: 0
-    - _MKEditorShowShadowBehavior: 0
+    - _MKEditorShowShadowBehavior: 1
     - _MKEditorShowSketchBehavior: 0
     - _MKEditorShowSpecularBehavior: 0
     - _MKEditorShowTranslucentBehavior: 0
@@ -137,7 +137,7 @@ Material:
     - _RimSmoothness: 0.5
     - _Roughness: 1
     - _Saturation: 1
-    - _ShadowIntensity: 1
+    - _ShadowIntensity: 0.29
     - _Shininess: 0.275
     - _SketchScale: 16
     - _SketchToneMax: 1
@@ -167,6 +167,6 @@ Material:
     - _OutlineColor: {r: 0, g: 0, b: 0, a: 1}
     - _ReflectColor: {r: 1, g: 1, b: 1, a: 0.5}
     - _RimColor: {r: 1, g: 1, b: 1, a: 1}
-    - _ShadowColor: {r: 0, g: 0, b: 0, a: 1}
+    - _ShadowColor: {r: 0.3207547, g: 0.19820221, b: 0.30620426, a: 1}
     - _SpecColor: {r: 1, g: 1, b: 1, a: 0.5}
     - _TranslucentColor: {r: 1, g: 1, b: 1, a: 0.5}
