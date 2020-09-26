@@ -12,7 +12,7 @@ public class Player : MonoBehaviour
     private NavMeshAgent agent;
     private Animator animator;
 
-    public GameObject egg, chickenPrefab;
+    public GameObject egg, chickenPrefab, ParticleEffect;
     private float eggTimer, transformationTimer;
     private int secondsRequiredForEgg, secondsRequiredForTransformation;
     public State state;
@@ -35,6 +35,7 @@ public class Player : MonoBehaviour
 
         targetPos = transform.position;
         isReadyForNewTarget = true;
+        ParticleEffect.SetActive(false);
     }
 
     // Update is called once per frame
@@ -80,6 +81,7 @@ public class Player : MonoBehaviour
             transformationTimer += Time.deltaTime;
             if (transformationTimer >= secondsRequiredForTransformation)
             {
+                ParticleEffect.SetActive(true);
                 Instantiate(chickenPrefab, transform.position, chickenPrefab.transform.rotation, transform.parent);
                 Destroy(gameObject);
             }
