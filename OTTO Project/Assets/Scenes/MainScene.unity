@@ -107,7 +107,7 @@ NavMeshSettings:
     serializedVersion: 2
     agentTypeID: 0
     agentRadius: 0.5
-    agentHeight: 1
+    agentHeight: 2
     agentSlope: 45
     agentClimb: 0.4
     ledgeDropHeight: 0
@@ -7075,7 +7075,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4293961362142948, guid: 02fd4f45795807c469e76f06078fe76f, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 6.29
+      value: 7.2
       objectReference: {fileID: 0}
     - target: {fileID: 4293961362142948, guid: 02fd4f45795807c469e76f06078fe76f, type: 3}
       propertyPath: m_LocalPosition.y
@@ -7083,7 +7083,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4293961362142948, guid: 02fd4f45795807c469e76f06078fe76f, type: 3}
       propertyPath: m_LocalPosition.z
-      value: 6.58
+      value: 6.93
       objectReference: {fileID: 0}
     - target: {fileID: 4293961362142948, guid: 02fd4f45795807c469e76f06078fe76f, type: 3}
       propertyPath: m_LocalRotation.x
@@ -18825,8 +18825,8 @@ BoxCollider:
   m_IsTrigger: 0
   m_Enabled: 1
   serializedVersion: 2
-  m_Size: {x: 0.03696816, y: 0.027959, z: 0.016401114}
-  m_Center: {x: 0.018481081, y: 0.0000000012645676, z: 0.01998057}
+  m_Size: {x: 0.03575474, y: 0.027959, z: 0.016401116}
+  m_Center: {x: 0.019087732, y: 0.000000012185923, z: 0.01998057}
 --- !u!4 &1514736997479102406
 Transform:
   m_ObjectHideFlags: 0
@@ -18951,7 +18951,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 5148817236205222065}
   m_LocalRotation: {x: 0, y: 0.7071068, z: 0, w: 0.7071068}
-  m_LocalPosition: {x: 3.5, y: 1.640888, z: 1.5}
+  m_LocalPosition: {x: 3.672, y: 1.640888, z: 0.861}
   m_LocalScale: {x: 55.02405, y: 55.02405, z: 55.02405}
   m_Children: []
   m_Father: {fileID: 543450653185408077}
@@ -18987,7 +18987,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2554290300239713705}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0.364, y: -1704.9999, z: 0.234}
+  m_LocalPosition: {x: 0, y: -1704.9999, z: 0}
   m_LocalScale: {x: 0.4, y: 1000, z: 0.4}
   m_Children: []
   m_Father: {fileID: 421250361}
@@ -20567,7 +20567,7 @@ GameObject:
   - component: {fileID: 3260616448729489446}
   - component: {fileID: 7762067042527787447}
   m_Layer: 0
-  m_Name: Cube.001
+  m_Name: Farm
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 1

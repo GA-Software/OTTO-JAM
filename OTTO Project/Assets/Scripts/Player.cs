@@ -1,5 +1,4 @@
 ﻿using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.AI;
 
@@ -7,7 +6,7 @@ using UnityEngine.AI;
 public class Player : MonoBehaviour
 {
     public enum State { Chicken, Chick };
-    
+
     private Camera cam;
     public NavMeshAgent agent;
     private Animator animator;
@@ -18,9 +17,9 @@ public class Player : MonoBehaviour
     public State state;
 
     [SerializeField] private Vector3 targetPos;
-    [SerializeField] private bool isReadyForNewTarget = false, waitingForNewTarget = false;
+    [SerializeField] private bool hasTarget = false;
     public bool isSafe = false;
-    
+
     private void Awake()
     {
         cam = Camera.main;
@@ -34,8 +33,7 @@ public class Player : MonoBehaviour
         secondsRequiredForEgg = Random.Range(10, 30);
         secondsRequiredForTransformation = Random.Range(10, 30);
 
-        targetPos = transform.position;
-        isReadyForNewTarget = true;
+        StartCoroutine(SetRandomDestinationAfterSeconds());
     }
 
     // Update is called once per frame
@@ -51,24 +49,27 @@ public class Player : MonoBehaviour
         }
 
         targetPos.y = transform.position.y;
-        float distance = Vector3.Distance(targetPos, transform.position);
-        
-        if (Mathf.Approximately(distance, 0f) && !waitingForNewTarget)
+
+        if (hasTarget)
         {
-            isReadyForNewTarget = true;
-            StartCoroutine(SetRandomDestinationAfterSeconds());
+            StartCoroutine(changeTargetAfterSeconds(transform.position));
         }
 
-        if (Vector3.Distance(targetPos, transform.position) < 0.1)
+        float distance = Vector3.Distance(targetPos, transform.position);
+        if (distance < 0.1f)
         {
-            StartCoroutine(waitForNewTarget());
+            hasTarget = false;
         }
-        
+
+        if (!hasTarget)
+        {
+            StartCoroutine(SetRandomDestinationAfterSeconds());
+        }
     }
 
     public void spawnEgg()
     {
-        if(GameManager.Instance.isGameStarted && !GameManager.Instance.isGameOver)
+        if (GameManager.Instance.isGameStarted && !GameManager.Instance.isGameOver)
         {
             eggTimer += Time.deltaTime;
             if (eggTimer >= secondsRequiredForEgg)
@@ -98,10 +99,18 @@ public class Player : MonoBehaviour
         }
     }
 
+    IEnumerator changeTargetAfterSeconds(Vector3 oldPosition)
+    {
+
+        yield return new WaitForSeconds(5f);
+        if (Vector3.Distance(oldPosition, transform.position) < 0.5f && hasTarget)
+        {
+            StartCoroutine(SetRandomDestinationAfterSeconds());
+        }
+    }
+
     IEnumerator SetRandomDestinationAfterSeconds()
     {
-        waitingForNewTarget = true;
-
         int randomNo = Random.Range(0, 2);
 
         animator.SetBool("Walk", false);
@@ -124,22 +133,13 @@ public class Player : MonoBehaviour
             default:
                 break;
         }
-        waitingForNewTarget = false;
 
-        if (isReadyForNewTarget)
-        {
-            animator.SetBool("Walk", true);
-            //Vector3 randomDestination = new Vector3(Random.Range(-8f, 8f), transform.position.y, Random.Range(-8f, 8f));
-
-            //targetPos = randomDestination;
-            //agent.destination = randomDestination;
-
-            SetTarget();
-        }
+        SetTarget();
     }
 
     public void SetTarget()
     {
+        animator.SetBool("Walk", true);
         NavMeshTriangulation navMeshData = NavMesh.CalculateTriangulation();
 
         // Pick the first indice of a random triangle in the nav mesh
@@ -149,21 +149,14 @@ public class Player : MonoBehaviour
         Vector3 point = Vector3.Lerp(navMeshData.vertices[navMeshData.indices[t]], navMeshData.vertices[navMeshData.indices[t + 1]], Random.value);
         Vector3.Lerp(point, navMeshData.vertices[navMeshData.indices[t + 2]], Random.value);
 
-        agent.destination = point;
-
-        waitingForNewTarget = false;
-        isReadyForNewTarget = true;
+        targetPos = point;
+        agent.destination = targetPos;
+        
+        hasTarget = true;
     }
 
-    IEnumerator waitForNewTarget()
-    {
-        if (GameManager.Instance.isGameStarted && !GameManager.Instance.isGameOver)
-        {
-            yield return new WaitForSeconds(10f);
-            SetTarget();
-        }
-    }
 
+    //Safe
     private void OnTriggerEnter(Collider other)
     {
         if (other.gameObject.tag == "Lamp")
@@ -187,7 +180,7 @@ public class Player : MonoBehaviour
             StartCoroutine(waitForSafe());
         }
     }
-    
+
     IEnumerator waitForSafe()
     {
         yield return new WaitForSeconds(3f);
