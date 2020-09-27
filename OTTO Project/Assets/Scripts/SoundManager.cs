@@ -7,8 +7,11 @@ public class SoundManager : MonoBehaviour
     public AudioClip gameStartedClip;
     public AudioClip gameOverClip;
     public AudioClip shipKidnapClip;
+    public AudioClip shipMovingClip;
     public AudioClip menuMusic;
     public AudioClip buttonClip;
+    public AudioClip grabClip;
+    public AudioClip dropClip;
 
     public static SoundManager Instance { get; private set; }
 
@@ -41,7 +44,7 @@ public class SoundManager : MonoBehaviour
         }
     }
 
-    public void playMusicWithLoop(AudioClip audioClip)
+    public void PlayMusic(AudioClip audioClip)
     {
         if (PlayerPrefs.GetInt("Music") == 1)
         {

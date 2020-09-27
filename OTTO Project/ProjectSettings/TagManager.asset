@@ -12,6 +12,7 @@ TagManager:
   - Deadzone
   - Enemy
   - Chicken
+  - MenuMusic
   layers:
   - Default
   - TransparentFX
@@ -24,7 +25,7 @@ TagManager:
   - Chicken
   - Egg
   - Lamp
-  - 
+  - IgnoreNavMesh
   - 
   - 
   - 

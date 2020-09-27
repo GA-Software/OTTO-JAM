@@ -9,11 +9,11 @@ public class Player : MonoBehaviour
     public enum State { Chicken, Chick };
     
     private Camera cam;
-    private NavMeshAgent agent;
+    public NavMeshAgent agent;
     private Animator animator;
 
     public GameObject egg, chickenPrefab;
-    private float eggTimer, transformationTimer;
+    [SerializeField] private float eggTimer, transformationTimer, newTargetTimer;
     private int secondsRequiredForEgg, secondsRequiredForTransformation;
     public State state;
 
@@ -31,8 +31,8 @@ public class Player : MonoBehaviour
     {
         agent = GetComponent<NavMeshAgent>();
 
-        secondsRequiredForEgg = Random.Range(5, 10);
-        secondsRequiredForTransformation = Random.Range(50, 10);
+        secondsRequiredForEgg = Random.Range(10, 30);
+        secondsRequiredForTransformation = Random.Range(10, 30);
 
         targetPos = transform.position;
         isReadyForNewTarget = true;
@@ -50,13 +50,17 @@ public class Player : MonoBehaviour
             waitForTransformation();
         }
 
+        targetPos.y = transform.position.y;
         float distance = Vector3.Distance(targetPos, transform.position);
+
 
         if (Mathf.Approximately(distance, 0f) && !waitingForNewTarget)
         {
             isReadyForNewTarget = true;
             StartCoroutine(SetRandomDestinationAfterSeconds());
         }
+
+        waitForNewTarget();
         
     }
 
@@ -69,7 +73,7 @@ public class Player : MonoBehaviour
             {
                 Instantiate(egg, transform.position, egg.transform.rotation);
                 eggTimer = 0f;
-                secondsRequiredForEgg = Random.Range(50, 10);
+                secondsRequiredForEgg = Random.Range(10, 30);
             }
         }
     }
@@ -122,16 +126,53 @@ public class Player : MonoBehaviour
         if (isReadyForNewTarget)
         {
             animator.SetBool("Walk", true);
-            Vector3 randomDestination = new Vector3(Random.Range(-8f, 8f), transform.position.y, Random.Range(-8f, 8f));
+            //Vector3 randomDestination = new Vector3(Random.Range(-8f, 8f), transform.position.y, Random.Range(-8f, 8f));
 
-            targetPos = randomDestination;
-            agent.destination = randomDestination;
+            //targetPos = randomDestination;
+            //agent.destination = randomDestination;
+
+            NavMeshTriangulation navMeshData = NavMesh.CalculateTriangulation();
+
+            // Pick the first indice of a random triangle in the nav mesh
+            int t = Random.Range(0, navMeshData.indices.Length - 3);
+
+            // Select a random point on it
+            Vector3 point = Vector3.Lerp(navMeshData.vertices[navMeshData.indices[t]], navMeshData.vertices[navMeshData.indices[t + 1]], Random.value);
+            Vector3.Lerp(point, navMeshData.vertices[navMeshData.indices[t + 2]], Random.value);
+
+            agent.destination = point;
+
             isReadyForNewTarget = false;
             waitingForNewTarget = false;
         }
     }
 
+    public void waitForNewTarget()
+    {
+        if (GameManager.Instance.isGameStarted && !GameManager.Instance.isGameOver)
+        {
+            if (Vector3.Distance(targetPos, transform.position) < 0.1f)
+                newTargetTimer += Time.deltaTime;
+            else
+                newTargetTimer = 0f;
+            if (newTargetTimer >= 10f)
+            {
+                waitingForNewTarget = false;
+                isReadyForNewTarget = true;
+                newTargetTimer = 0f;
+            }
+        }
+    }
+
     private void OnTriggerEnter(Collider other)
+    {
+        if (other.gameObject.tag == "Lamp")
+        {
+            isSafe = true;
+        }
+    }
+
+    private void OnTriggerStay(Collider other)
     {
         if (other.gameObject.tag == "Lamp")
         {

@@ -1,6 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 
 public class EggController : MonoBehaviour
 {
@@ -35,8 +33,9 @@ public class EggController : MonoBehaviour
 
     void OnMouseDown()
     {
-        if (isDraggable)
+        if (isDraggable && GameManager.Instance.isGameStarted && !GameManager.Instance.isGameOver)
         {
+            SoundManager.Instance.PlaySound(SoundManager.Instance.grabClip);
             _rigidbody.constraints = RigidbodyConstraints.FreezePositionY;
             thisPointer = Instantiate(circlePointer, new Vector3(transform.position.x, transform.position.y - 3.8f, transform.position.z), circlePointer.transform.rotation, transform);
             mZCoord = Camera.main.WorldToScreenPoint(gameObject.transform.position).z;
@@ -60,7 +59,7 @@ public class EggController : MonoBehaviour
     
     void OnMouseDrag()
     {
-        if (isDraggable)
+        if (isDraggable && GameManager.Instance.isGameStarted && !GameManager.Instance.isGameOver)
         {
             transform.position = new Vector3(GetMouseAsWorldPoint().x + mOffset.x, 2f, GetMouseAsWorldPoint().z + mOffset.z);
         }
@@ -68,7 +67,7 @@ public class EggController : MonoBehaviour
 
     private void OnMouseUp()
     {
-        if(isDraggable)
+        if(isDraggable && GameManager.Instance.isGameStarted && !GameManager.Instance.isGameOver)
         {
             _rigidbody.constraints = RigidbodyConstraints.FreezeRotation;
             Destroy(thisPointer);
@@ -80,10 +79,8 @@ public class EggController : MonoBehaviour
         if (collision.gameObject.tag == "Basket")
         {
             isDraggable = false;
-            Destroy(GetComponent<Rigidbody>());
-            Destroy(GetComponent<CapsuleCollider>());
             GameManager.Instance.CollectEgg();
-            secondsRequiredForTransformation = Random.Range(5, 10);
+            secondsRequiredForTransformation = Random.Range(10, 30);
         }
     }
     
@@ -104,6 +101,21 @@ public class EggController : MonoBehaviour
         }
     }
 
+    private void OnMouseOver()
+    {
+
+        if (isDraggable && GameManager.Instance.isGameStarted && !GameManager.Instance.isGameOver)
+        {
+            GameManager.Instance.instructText.gameObject.SetActive(true);
+            GameManager.Instance.instructText.text = "Yumurtayı al.";
+        }
+    }
+
+    private void OnMouseExit()
+    {
+        GameManager.Instance.instructText.gameObject.SetActive(false);
+    }
+
     public void waitForDestroy()
     {
         if (GameManager.Instance.isGameStarted && !GameManager.Instance.isGameOver)
@@ -114,5 +126,11 @@ public class EggController : MonoBehaviour
                 Destroy(gameObject);
             }
         }
+    }
+
+    private void OnCollisionEnter(Collision collision)
+    {
+        if (collision.gameObject.tag == "Ground")
+            SoundManager.Instance.PlaySound(SoundManager.Instance.dropClip);
     }
 }

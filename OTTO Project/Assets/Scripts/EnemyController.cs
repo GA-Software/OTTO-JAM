@@ -6,15 +6,27 @@ public class EnemyController : MonoBehaviour
     [SerializeField] private bool hasFoundChicken = false, willReturn = false, chickenIsMoving = false;
     [SerializeField] private Player targetChicken;
     [SerializeField] private Vector3 originalPos;
+    public GameObject particleEffect;
+
+    private bool isUfoMoving = false, waitingForStart = true;
 
     private void Awake()
     {
         originalPos = transform.position;
+        particleEffect.SetActive(false);
+        StartCoroutine(waitForStart());
+    }
+
+    IEnumerator waitForStart()
+    {
+        yield return new WaitForSeconds(10f);
+        waitingForStart = false;
+        Debug.Log("enemy started");
     }
 
     private void Update()
     {
-        if(GameManager.Instance.isGameStarted && !GameManager.Instance.isGameOver && GameManager.Instance.chickens.Count > 0)
+        if(GameManager.Instance.isGameStarted && !GameManager.Instance.isGameOver && GameManager.Instance.chickens.Count > 0 && !waitingForStart)
         {
             foreach (Player chicken in GameManager.Instance.chickens)
             {
@@ -27,9 +39,15 @@ public class EnemyController : MonoBehaviour
 
             if (hasFoundChicken && targetChicken != null)
             {
+                if (isUfoMoving)
+                {
+                    SoundManager.Instance.PlaySound(SoundManager.Instance.shipMovingClip);
+                    isUfoMoving = false;
+                }
+
                 Vector3 tempPos = targetChicken.transform.position;
                 tempPos.y = 5f;
-                transform.position = Vector3.Lerp(transform.position, tempPos, 2f * Time.deltaTime);
+                transform.position = Vector3.Lerp(transform.position, tempPos, 1f * Time.deltaTime);
             }
 
             if (targetChicken == null || targetChicken.isSafe)
@@ -50,7 +68,9 @@ public class EnemyController : MonoBehaviour
 
             if (isHome())
             {
+                Destroy(GameObject.Find("UfoMovingClip"));
                 willReturn = false;
+                isUfoMoving = true;
             }
         }
 
@@ -65,18 +85,28 @@ public class EnemyController : MonoBehaviour
     {
         if (!targetChicken.isSafe)
         {
+            particleEffect.SetActive(true);
             StartCoroutine(TakeChicken());
+        }
+        else
+        {
+            willReturn = true;
+            isUfoMoving = true;
         }
     }
 
     public void returnToOriginalPos()
     {
-        transform.position = Vector3.Lerp(transform.position, originalPos, 2f * Time.deltaTime);
+        transform.position = Vector3.Lerp(transform.position, originalPos, 1f * Time.deltaTime);
     }
 
     IEnumerator TakeChicken()
     {
+        SoundManager.Instance.PlaySound(SoundManager.Instance.shipKidnapClip);
+        yield return new WaitForSeconds(1f);
         chickenIsMoving = true;
+        Destroy(targetChicken.agent);
+        Destroy(targetChicken.GetComponent<Rigidbody>());
         yield return new WaitForSeconds(3f);
         GameManager.Instance.chickens.Remove(targetChicken);
         GameManager.Instance.ControlChickenCount();
@@ -84,6 +114,7 @@ public class EnemyController : MonoBehaviour
         hasFoundChicken = false;
         chickenIsMoving = false;
         willReturn = true;
+        particleEffect.SetActive(false);
     }
 
     bool isHome()
@@ -93,7 +124,8 @@ public class EnemyController : MonoBehaviour
 
     private void moveChicken()
     {
-        targetChicken.transform.position = Vector3.Lerp(targetChicken.transform.position, transform.position, 2f * Time.deltaTime);
+        if(targetChicken != null)
+            targetChicken.transform.position = Vector3.Lerp(targetChicken.transform.position, transform.position, 2f * Time.deltaTime);
     }
 
     private void OnTriggerEnter(Collider other)

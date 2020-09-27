@@ -8,7 +8,7 @@ using System.Collections.Generic;
 public class GameManager : MonoBehaviour
 {
     public bool isGameOver, isGameStarted;
-    public Text eggCountText, gameOverEggText, chickenCountText, gameOverChickenText;
+    public Text eggCountText, gameOverEggText, chickenCountText, gameOverChickenText, instructText;
     public int eggCount;
     public List<Player> chickens;
     public GameObject particleEffect;
@@ -28,13 +28,20 @@ public class GameManager : MonoBehaviour
         
         eggCount = 0;
         eggCountText.text = "x" + eggCount;
-        chickenCountText.text = "x" + chickens.Count;
+        instructText.GetComponent<RectTransform>().DOPunchScale(new Vector3(0.04f, 0.04f, 0.04f), 1f, 1, 1f).SetEase(Ease.Linear).SetLoops(-1);
 
     }
-    
+
+    private void Update()
+    {
+        if (Input.GetKeyDown(KeyCode.X))
+            ScreenCapture.CaptureScreenshot("FarmDefense" + Random.Range(1, 1000) + ".png");
+    }
+
     private void Start()
     {
         chickens.AddRange(FindObjectsOfType<Player>());
+        ControlChickenCount();
     }
 
     public IEnumerator playParticle(Vector3 position)

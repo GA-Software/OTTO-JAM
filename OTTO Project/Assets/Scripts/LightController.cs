@@ -1,5 +1,4 @@
 ﻿using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class LightController : MonoBehaviour
@@ -19,8 +18,9 @@ public class LightController : MonoBehaviour
 
     void OnMouseDown()
     {
-        if (isDraggable)
+        if (isDraggable && GameManager.Instance.isGameStarted && !GameManager.Instance.isGameOver)
         {
+            SoundManager.Instance.PlaySound(SoundManager.Instance.grabClip);
             _rigidbody.constraints = RigidbodyConstraints.FreezeAll;
             thisPointer = Instantiate(circlePointer, new Vector3(transform.position.x, transform.position.y - 3.8f, transform.position.z), circlePointer.transform.rotation, transform);
             thisPointer.transform.localScale *= 4f;
@@ -29,6 +29,20 @@ public class LightController : MonoBehaviour
             // Store offset = gameobject world pos - mouse world pos
             mOffset = gameObject.transform.position - GetMouseAsWorldPoint();
         }
+    }
+
+    private void OnMouseOver()
+    {
+        if (isDraggable && GameManager.Instance.isGameStarted && !GameManager.Instance.isGameOver)
+        {
+            GameManager.Instance.instructText.gameObject.SetActive(true);
+            GameManager.Instance.instructText.text = "Lambayı al.";
+        }
+    }
+
+    private void OnMouseExit()
+    {
+        GameManager.Instance.instructText.gameObject.SetActive(false);
     }
 
     private Vector3 GetMouseAsWorldPoint()
@@ -45,7 +59,7 @@ public class LightController : MonoBehaviour
     
     void OnMouseDrag()
     {
-        if (isDraggable)
+        if (isDraggable && GameManager.Instance.isGameStarted && !GameManager.Instance.isGameOver)
         {
             transform.position = new Vector3(GetMouseAsWorldPoint().x + mOffset.x, 2f, GetMouseAsWorldPoint().z + mOffset.z);
         }
@@ -53,7 +67,7 @@ public class LightController : MonoBehaviour
 
     private void OnMouseUp()
     {
-        if(isDraggable)
+        if(isDraggable && GameManager.Instance.isGameStarted && !GameManager.Instance.isGameOver)
         {
             _rigidbody.constraints = RigidbodyConstraints.FreezeRotation;
             Destroy(thisPointer);
@@ -74,5 +88,11 @@ public class LightController : MonoBehaviour
         transform.position = Vector3.zero;
         yield return new WaitForSeconds(0.1f);
         _rigidbody.constraints = RigidbodyConstraints.FreezeRotation;
+    }
+
+    private void OnCollisionEnter(Collision collision)
+    {
+        if(collision.gameObject.tag == "Ground")
+            SoundManager.Instance.PlaySound(SoundManager.Instance.dropClip);
     }
 }

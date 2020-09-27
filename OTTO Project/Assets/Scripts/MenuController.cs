@@ -32,13 +32,16 @@ public class MenuController : MonoBehaviour
 
     private void Start()
     {
+        if (PlayerPrefs.GetInt("Music") == 1 && GameObject.FindGameObjectWithTag("MenuMusic") == null)
+            PlayMusic(SoundManager.Instance.menuMusic);
+
         updateSoundImages();
     }
 
     public void StartGame()
     {
         tutorialPanel.DOFade(1f, 1f).SetEase(Ease.Linear);
-        tutorialPanel.DOFade(0f, 1f).SetEase(Ease.Linear).SetDelay(6f);
+        tutorialPanel.DOFade(0f, 1f).SetEase(Ease.Linear).SetDelay(4f);
 
         menuPanel.SetActive(false);
         gameplayPanel.SetActive(true);
@@ -99,10 +102,20 @@ public class MenuController : MonoBehaviour
         updateSoundImages();
     }
 
-    public void ChangeVibrationStatus()
+    public void ChangeMusicStatus()
     {
         SoundManager.Instance.ChangeMusicStatus();
         updateSoundImages();
+    }
+
+    public void PlaySound(AudioClip clip)
+    {
+        SoundManager.Instance.PlaySound(clip);
+    }
+
+    public void PlayMusic(AudioClip clip)
+    {
+        SoundManager.Instance.PlayMusic(clip);
     }
 
     public void updateSoundImages()
