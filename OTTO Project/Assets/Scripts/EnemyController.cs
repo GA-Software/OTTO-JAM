@@ -10,18 +10,25 @@ public class EnemyController : MonoBehaviour
 
     private bool isUfoMoving = false, waitingForStart = true;
 
+    public static EnemyController instance;
+
     private void Awake()
     {
+        instance = this;
         originalPos = transform.position;
         particleEffect.SetActive(false);
-        StartCoroutine(waitForStart());
     }
 
     IEnumerator waitForStart()
     {
-        yield return new WaitForSeconds(10f);
+        yield return new WaitForSeconds(5f);
         waitingForStart = false;
         Debug.Log("enemy started");
+    }
+
+    public void startGame()
+    {
+        StartCoroutine(waitForStart());
     }
 
     private void Update()

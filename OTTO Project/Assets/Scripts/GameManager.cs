@@ -53,6 +53,7 @@ public class GameManager : MonoBehaviour
     
     public void StartGame()
     {
+        EnemyController.instance.startGame();
         isGameOver = false;
         isGameStarted = true;
     }

@@ -52,15 +52,17 @@ public class Player : MonoBehaviour
 
         targetPos.y = transform.position.y;
         float distance = Vector3.Distance(targetPos, transform.position);
-
-
+        
         if (Mathf.Approximately(distance, 0f) && !waitingForNewTarget)
         {
             isReadyForNewTarget = true;
             StartCoroutine(SetRandomDestinationAfterSeconds());
         }
 
-        waitForNewTarget();
+        if (Vector3.Distance(targetPos, transform.position) < 0.1)
+        {
+            StartCoroutine(waitForNewTarget());
+        }
         
     }
 
@@ -122,7 +124,8 @@ public class Player : MonoBehaviour
             default:
                 break;
         }
-        
+        waitingForNewTarget = false;
+
         if (isReadyForNewTarget)
         {
             animator.SetBool("Walk", true);
@@ -131,36 +134,33 @@ public class Player : MonoBehaviour
             //targetPos = randomDestination;
             //agent.destination = randomDestination;
 
-            NavMeshTriangulation navMeshData = NavMesh.CalculateTriangulation();
-
-            // Pick the first indice of a random triangle in the nav mesh
-            int t = Random.Range(0, navMeshData.indices.Length - 3);
-
-            // Select a random point on it
-            Vector3 point = Vector3.Lerp(navMeshData.vertices[navMeshData.indices[t]], navMeshData.vertices[navMeshData.indices[t + 1]], Random.value);
-            Vector3.Lerp(point, navMeshData.vertices[navMeshData.indices[t + 2]], Random.value);
-
-            agent.destination = point;
-
-            isReadyForNewTarget = false;
-            waitingForNewTarget = false;
+            SetTarget();
         }
     }
 
-    public void waitForNewTarget()
+    public void SetTarget()
+    {
+        NavMeshTriangulation navMeshData = NavMesh.CalculateTriangulation();
+
+        // Pick the first indice of a random triangle in the nav mesh
+        int t = Random.Range(0, navMeshData.indices.Length - 3);
+
+        // Select a random point on it
+        Vector3 point = Vector3.Lerp(navMeshData.vertices[navMeshData.indices[t]], navMeshData.vertices[navMeshData.indices[t + 1]], Random.value);
+        Vector3.Lerp(point, navMeshData.vertices[navMeshData.indices[t + 2]], Random.value);
+
+        agent.destination = point;
+
+        waitingForNewTarget = false;
+        isReadyForNewTarget = true;
+    }
+
+    IEnumerator waitForNewTarget()
     {
         if (GameManager.Instance.isGameStarted && !GameManager.Instance.isGameOver)
         {
-            if (Vector3.Distance(targetPos, transform.position) < 0.1f)
-                newTargetTimer += Time.deltaTime;
-            else
-                newTargetTimer = 0f;
-            if (newTargetTimer >= 10f)
-            {
-                waitingForNewTarget = false;
-                isReadyForNewTarget = true;
-                newTargetTimer = 0f;
-            }
+            yield return new WaitForSeconds(10f);
+            SetTarget();
         }
     }
 
